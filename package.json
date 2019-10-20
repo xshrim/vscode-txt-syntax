@@ -1,0 +1,62 @@
+{
+    "name": "txt-syntax",
+    "displayName": "Txt Syntax",
+    "description": "highlight the .txt, .ini and other config files",
+    "version": "0.0.3",
+    "publisher": "xshrim",
+    "icon": "logo.png",
+    "engines": {
+        "vscode": "*"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "txt",
+                "aliases": [
+                    "Txt",
+                    "txt"
+                ],
+                "extensions": [
+                    ".txt",
+                    ".cf",
+                    ".conf",
+                    ".log",
+                    ".cfg",
+                    ".properties"
+                ],
+                "configuration": "./txt.language-configuration.json"
+            },
+            {
+                "id": "ini",
+                "aliases": [
+                    "Ini",
+                    "ini"
+                ],
+                "extensions": [
+                    ".ini"
+                ],
+                "configuration": "./ini.language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "txt",
+                "scopeName": "source.txt",
+                "path": "./syntaxes/txt.tmLanguage.json"
+            },
+            {
+                "language": "ini",
+                "scopeName": "source.txt",
+                "path": "./syntaxes/txt.tmLanguage.json"
+            }
+        ]
+    },
+    "__metadata": {
+        "id": "c5900888-28e9-40d6-84d0-d1645e62f4cc",
+        "publisherId": "xshrim.txt-syntax",
+        "publisherDisplayName": "xshrim"
+    }
+}
