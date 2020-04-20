@@ -2,8 +2,9 @@
     "name": "txt-syntax",
     "displayName": "Txt Syntax",
     "description": "highlight the .txt, .ini and other config files",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "xshrim",
+    "repository": "https://github.com/xshrim/vscode-txt-syntax",
     "icon": "logo.png",
     "engines": {
         "vscode": "*"
@@ -21,6 +22,7 @@
                 ],
                 "extensions": [
                     ".txt",
+                    ".ini",
                     ".cf",
                     ".conf",
                     ".log",
@@ -28,27 +30,11 @@
                     ".properties"
                 ],
                 "configuration": "./txt.language-configuration.json"
-            },
-            {
-                "id": "ini",
-                "aliases": [
-                    "Ini",
-                    "ini"
-                ],
-                "extensions": [
-                    ".ini"
-                ],
-                "configuration": "./ini.language-configuration.json"
             }
         ],
         "grammars": [
             {
                 "language": "txt",
-                "scopeName": "source.txt",
-                "path": "./syntaxes/txt.tmLanguage.json"
-            },
-            {
-                "language": "ini",
                 "scopeName": "source.txt",
                 "path": "./syntaxes/txt.tmLanguage.json"
             }
