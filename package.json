@@ -10,7 +10,7 @@
         "vscode": "*"
     },
     "categories": [
-        "Languages"
+        "Programming Languages"
     ],
     "contributes": {
         "languages": [
