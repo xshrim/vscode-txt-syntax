@@ -16,7 +16,3 @@ Supported file types:
 .properties
 
 **note**: It will override the default highlight schemes supported by visual studio code if you active this extension.
-
-## ok
-dafasdf
-### d
