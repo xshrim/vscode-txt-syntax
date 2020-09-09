@@ -1,48 +1,54 @@
 {
-    "name": "txt-syntax",
-    "displayName": "Txt Syntax",
-    "description": "highlight the .txt, .ini and other config files",
-    "version": "0.0.4",
-    "publisher": "xshrim",
-    "repository": "https://github.com/xshrim/vscode-txt-syntax",
-    "icon": "logo.png",
-    "engines": {
-        "vscode": "*"
-    },
-    "categories": [
-        "Programming Languages"
-    ],
-    "contributes": {
-        "languages": [
-            {
-                "id": "txt",
-                "aliases": [
-                    "Txt",
-                    "txt"
-                ],
-                "extensions": [
-                    ".txt",
-                    ".ini",
-                    ".cf",
-                    ".conf",
-                    ".log",
-                    ".cfg",
-                    ".properties"
-                ],
-                "configuration": "./txt.language-configuration.json"
-            }
+  "name": "txt-syntax",
+  "displayName": "Txt Syntax",
+  "description": "highlight the .txt, .ini and other config files",
+  "version": "0.0.6",
+  "publisher": "xshrim",
+  "repository": "https://github.com/xshrim/vscode-txt-syntax",
+  "icon": "logo.png",
+  "engines": {
+    "vscode": "*"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "txt",
+        "aliases": [
+          "Txt",
+          "txt"
         ],
-        "grammars": [
-            {
-                "language": "txt",
-                "scopeName": "source.txt",
-                "path": "./syntaxes/txt.tmLanguage.json"
-            }
-        ]
-    },
-    "__metadata": {
-        "id": "c5900888-28e9-40d6-84d0-d1645e62f4cc",
-        "publisherId": "xshrim.txt-syntax",
-        "publisherDisplayName": "xshrim"
-    }
+        "extensions": [
+          ".text",
+          ".txt",
+          ".ini",
+          ".cf",
+          ".cnf",
+          ".conf",
+          ".log",
+          ".cfg",
+          ".out",
+          ".tmp",
+          ".temp",
+          ".file",
+          ".properties"
+        ],
+        "configuration": "./txt.language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "txt",
+        "scopeName": "source.txt",
+        "path": "./syntaxes/txt.tmLanguage.json"
+      }
+    ]
+  },
+  "__metadata": {
+    "id": "c5900888-28e9-40d6-84d0-d1645e62f4cc",
+    "publisherId": "xshrim.txt-syntax",
+    "publisherDisplayName": "xshrim"
+  }
 }
