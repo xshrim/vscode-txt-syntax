@@ -1,14 +1,18 @@
 # Change Log
 
-## v0.00.6
+## v0.0.7
+
+- Support fold between section headers(Set "editor.foldingStrategy": "auto")
+
+## v0.0.6
 
 - Fix some bugs
 
 ## v0.0.5
 
 - Support chinese punctuation marks
-- Add logical "head" level which is highlighted and can be folded(A. , Part I, = something, 一、, etc...)
-- Support folding(--START/--END pair or "head"/--- pair)
+- Add logical "sectin header" level which is highlighted and can be folded(-*-, A. , Part I, = something, 一、, etc...)
+- Support folding("header"/--- pair)
 
 ## v0.0.4
 

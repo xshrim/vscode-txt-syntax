@@ -120,6 +120,21 @@
       "name": "meta.selector"
     },
     {
+      "begin": "^-\\*-.*?",
+      "beginCaptures": {
+        "0": {
+          "name": "meta.selector"
+        }
+      },
+      "end": "\\n",
+      "endCaptures": {
+        "0": {
+          "name": "meta.selector"
+        }
+      },
+      "name": "meta.selector"
+    },
+    {
       "match": "^\\[.+\\]\\s*$",
       "name": "meta.selector"
     },
