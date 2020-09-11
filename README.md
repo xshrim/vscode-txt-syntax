@@ -24,12 +24,13 @@ Section headers like these(Section ended with `---` or another header):
 
 ```
 -*-
-= xxx
+* xxx
+[xxx]
 Part I.
 Section A
 Page 1
-A.
-1.
+A. 
+1. 
 一 xx
 甲、xxx
 第一章 xxx
