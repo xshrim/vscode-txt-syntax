@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.0.9
+
+- Support folding braces and hypertext markups
+
 ## v0.0.8
 
 - Fix bugs

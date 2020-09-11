@@ -1,4 +1,6 @@
-Txt Syntax extension is aimed to highlight several text files and fold between sections.
+Txt Syntax extension is aimed to highlight several text files.
+
+Txt Syntax also supports simple folding function, text between sections, braces or hypertext markups could be folded.
 
 *folding function need you set `"editor.foldingStrategy": "auto"`.*
 
@@ -20,7 +22,7 @@ Supported file types:
 .properties
 ````
 
-Section headers like these(Section ended with `---` or another header):
+Section headers like these:
 
 ```
 -*-
