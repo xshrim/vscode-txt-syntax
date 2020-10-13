@@ -37,6 +37,7 @@
           ".tmp",
           ".temp",
           ".file",
+          ".repo",
           ".properties"
         ],
         "configuration": "./txt.language-configuration.json"
