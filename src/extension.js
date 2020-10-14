@@ -1,6 +1,71 @@
 const vscode = require('vscode');
+const path = require("path");
+const process = require('process');
 // https://macromates.com/manual/en/language_grammars
+// https://xshrim.visualstudio.com/_usersSettings/tokens
+
+function revealLine(line) {
+  var reviewType = vscode.TextEditorRevealType.InCenter;
+  if (line === vscode.window.activeTextEditor.selection.active.line) {
+    reviewType = vscode.TextEditorRevealType.InCenterIfOutsideViewport;
+  }
+  const newSe = new vscode.Selection(line, 0, line, 0);
+  vscode.window.activeTextEditor.selection = newSe;
+  vscode.window.activeTextEditor.revealRange(newSe, reviewType);
+}
+
+function revealPosition(line, column) {
+  if (isNaN(column)) {
+    revealLine(line);
+  } else {
+    var reviewType = vscode.TextEditorRevealType.InCenter;
+    if (line === vscode.window.activeTextEditor.selection.active.line) {
+      reviewType = vscode.TextEditorRevealType.InCenterIfOutsideViewport;
+    }
+    const newSe = new vscode.Selection(line, column, line, column);
+    vscode.window.activeTextEditor.selection = newSe;
+    vscode.window.activeTextEditor.revealRange(newSe, reviewType);
+  }
+}
+
 async function activate(context) {
+  vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
+    // var f = vscode.Uri.file(documentObj.fsPath);
+    var editor = vscode.window.activeTextEditor
+    if (editor) {
+      var range = editor.document.getWordRangeAtPosition(editor.selection.active, /(\.{0,2}|~)(\w:\\|file:\/\/\/|\/)[\w\.\/\-\=\+@%&\(\)\<\>\[\]\{\}\\]*\.?\w*/g)
+      //var text = editor.document.getText(editor.selection);
+      var fpath = editor.document.getText(range)
+      if (encodeURI(fpath).match(/%0A/g) || encodeURI(fpath).match(/\n/g) || fpath.indexOf(".") == 0) {
+        fpath = editor.document.getText(editor.document.getWordRangeAtPosition(editor.selection.active, /\S+/g))
+        var currentlyOpenTabfileDir = path.dirname(vscode.window.activeTextEditor.document.fileName)
+        fpath = path.join(currentlyOpenTabfileDir, fpath)
+      } else if (fpath.indexOf("~") == 0) {
+        fpath = fpath.replace("~", process.env.HOME)
+      } else if (fpath.indexOf("file:///") == 0) {
+        fpath = fpath.replace("file:///", "/")
+      }
+      // while (fpath.indexOf("~") != 0 && fpath.indexOf("/") != 0 && fpath.indexOf(".") != 0 && fpath.indexOf(":") != 1) {}
+      var f = vscode.Uri.file(fpath);
+      vscode.workspace.openTextDocument(f).then(doc => {
+        vscode.window.showTextDocument(doc).then(() => {
+        })
+      })
+    }
+    // var line = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.selection.active.line : undefined;
+    // var column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : undefined;
+    // var selection = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.selection : undefined;
+    // console.log(line, column, selection);
+    // var f = vscode.Uri.file("README.md");
+    // vscode.workspace.openTextDocument(f).then(doc => {
+    //   vscode.window.showTextDocument(doc).then(() => {
+    //     lineInt = parseInt(line, 10);
+    //     columnInt = parseInt(column, 10);
+    //     console.log(lineInt, columnInt);
+    //     revealPosition(lineInt - 1, columnInt - 1);
+    //   })
+    // })
+  });
   disposable = vscode.languages.registerFoldingRangeProvider('txt', {   //{ scheme: 'file', language: 'txt' }
     provideFoldingRanges(document, context, token) {
       // console.log('folding range invoked'); // comes here on every character edit

@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.1.0
+
+- Support open the file under the current cursor through the right-click menu
+- The line would be commented only when the semicolon is at the beginning of the line now
+
 ## v0.0.9
 
 - Support folding braces and hypertext markups

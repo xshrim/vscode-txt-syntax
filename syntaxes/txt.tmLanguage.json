@@ -24,7 +24,7 @@
       ]
     },
     {
-      "begin": "(^[ \\t]+)?(?=;)",
+      "begin": "^([ \\t]+)?(?=;)",
       "beginCaptures": {
         "1": {
           "name": "punctuation.whitespace.comment.leading.txt"
@@ -155,6 +155,10 @@
     },
     {
       "match": "(https?://|tftp://|ftp://|smtp://|pop3://|snmp://|telnet://|imap://|dhcp://|dns://|nfs://|file://|sftp://|ssl://|smb://|vmess://|socks://)\\S*",
+      "name": "entity.name.type.txt"
+    },
+    {
+      "match": "(\\.{0,2}|~)(\\w:\\\\|file:///|/)[\\w\\./\\-\\=\\+@%&\\(\\)\\<\\>\\[\\]\\{\\}\\\\]*\\.?\\w*",
       "name": "entity.name.type.txt"
     },
     {

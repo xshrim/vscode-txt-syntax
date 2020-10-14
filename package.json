@@ -1,8 +1,8 @@
 {
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
-  "description": "highlight the .txt, .ini, .cnf and other config files",
-  "version": "0.0.9",
+  "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf and other config files",
+  "version": "0.1.0",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -11,6 +11,11 @@
   },
   "categories": [
     "Programming Languages"
+  ],
+  "keywords": [
+    "txt",
+    "text",
+    "syntax"
   ],
   "activationEvents": [
     "*"
@@ -21,18 +26,18 @@
       {
         "id": "txt",
         "aliases": [
-          "Txt",
+          "TXT",
           "txt"
         ],
         "extensions": [
-          ".text",
           ".txt",
+          ".text",
           ".ini",
           ".cf",
           ".cnf",
+          ".cfg",
           ".conf",
           ".log",
-          ".cfg",
           ".out",
           ".tmp",
           ".temp",
@@ -49,7 +54,22 @@
         "scopeName": "source.txt",
         "path": "./syntaxes/txt.tmLanguage.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "txtsyntax.openit",
+        "title": "TXT: Open File"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "txtsyntax.openit",
+          "group": "txsyntax",
+          "when": "editorTextFocus && resourceLangId == txt"
+        }
+      ]
+    }
   },
   "__metadata": {
     "id": "c5900888-28e9-40d6-84d0-d1645e62f4cc",
