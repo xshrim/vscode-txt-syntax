@@ -1,8 +1,19 @@
 const vscode = require('vscode');
 const path = require("path");
 const process = require('process');
+const clp = require("./CodelensProvider");
+
 // https://macromates.com/manual/en/language_grammars
 // https://xshrim.visualstudio.com/_usersSettings/tokens
+
+function selectTerminal() {
+  if (vscode.window.terminals.length === 0) {
+    vscode.window.activeTerminal = vscode.window.createTerminal();
+  } else if (vscode.window.activeTerminal === undefined) {
+    vscode.window.activeTerminal = vscode.window.terminals[0];
+  }
+  vscode.window.activeTerminal.show(true);
+}
 
 function revealLine(line) {
   var reviewType = vscode.TextEditorRevealType.InCenter;
@@ -29,11 +40,30 @@ function revealPosition(line, column) {
 }
 
 async function activate(context) {
+  const codelensProvider = new clp.CodelensProvider();
+  vscode.languages.registerCodeLensProvider("makefile", codelensProvider);
+  vscode.commands.registerCommand("txtsyntax.enableCodeLens", () => {
+    vscode.workspace.getConfiguration("txtsyntax").update("enableCodeLens", true, true);
+  });
+
+  vscode.commands.registerCommand("txtsyntax.disableCodeLens", () => {
+    vscode.workspace.getConfiguration("txtsyntax").update("enableCodeLens", false, true);
+  });
+
+  vscode.commands.registerCommand("txtsyntax.codelensAction", (args) => {
+    vscode.window.showInformationMessage(`CodeLens action clicked with args=${args}`);
+  });
+
+  vscode.commands.registerCommand('txtsyntax.sendText', (args) => {
+    selectTerminal();
+    vscode.window.activeTerminal.sendText(args.text);
+  });
+
   vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
     // var f = vscode.Uri.file(documentObj.fsPath);
     var editor = vscode.window.activeTextEditor
     if (editor) {
-      var range = editor.document.getWordRangeAtPosition(editor.selection.active, /(\.{0,2}|~)(\w:\\|file:\/\/\/|\/)[\w\.\/\-\=\+@%&\(\)\<\>\[\]\{\}\\]*\.?\w*/g)
+      var range = editor.document.getWordRangeAtPosition(editor.selection.active, /(\.{0,2}|~)(\w:\\|file:\/\/\/|\/)[\w\.\/\-\=\+:@%&\(\)\<\>\[\]\{\}\\]*\.?\w*/g)
       //var text = editor.document.getText(editor.selection);
       var fpath = editor.document.getText(range)
       if (encodeURI(fpath).match(/%0A/g) || encodeURI(fpath).match(/\n/g) || fpath.indexOf(".") == 0) {

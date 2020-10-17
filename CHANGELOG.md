@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.1
+
+- Support codelens for Makefile to make running makefile target easily
+
 ## v0.1.0
 
 - Support open the file under the current cursor through the right-click menu

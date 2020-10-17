@@ -8,6 +8,8 @@
 
 - Support simple folding function.
 
+- Support codelens for Makefile to make running makefile target easily.
+
 *folding function need you set `"editor.foldingStrategy": "auto"`.*
 
 ## Supported file types

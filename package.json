@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf and other config files",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -15,7 +15,9 @@
   "keywords": [
     "txt",
     "text",
-    "syntax"
+    "syntax",
+    "makefile",
+    "codelens"
   ],
   "activationEvents": [
     "*"
@@ -57,10 +59,34 @@
     ],
     "commands": [
       {
+        "title": "TXT: Open File",
         "command": "txtsyntax.openit",
-        "title": "TXT: Open File"
+        "category": "TxtSyntax"
+      },
+      {
+        "title": "Enable CodeLens",
+        "command": "txtsyntax.enableCodeLens",
+        "category": "TxtSyntax"
+      },
+      {
+        "title": "Disable Codelens",
+        "command": "txtsyntax.disableCodeLens",
+        "category": "TxtSyntax"
+      },
+      {
+        "title": "Send text to Terminal",
+        "command": "txtsyntax.sendText",
+        "category": "TxtSyntax"
       }
     ],
+    "configuration": {
+      "properties": {
+        "txtsyntax.enableCodeLens": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
     "menus": {
       "editor/context": [
         {
