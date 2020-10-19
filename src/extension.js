@@ -8,11 +8,19 @@ const clp = require("./CodelensProvider");
 
 function selectTerminal() {
   if (vscode.window.terminals.length === 0) {
-    vscode.window.activeTerminal = vscode.window.createTerminal();
+    var term = vscode.window.createTerminal();
+    vscode.window.activeTerminal = term
+    term.show(true);
+    return term;
   } else if (vscode.window.activeTerminal === undefined) {
-    vscode.window.activeTerminal = vscode.window.terminals[0];
+    var term = vscode.window.terminals[0];
+    vscode.window.activeTerminal = term;
+    term.show(true);
+    return term;
+  } else {
+    vscode.window.activeTerminal.show(true);
+    return vscode.window.activeTerminal;
   }
-  vscode.window.activeTerminal.show(true);
 }
 
 function revealLine(line) {
@@ -55,8 +63,8 @@ async function activate(context) {
   });
 
   vscode.commands.registerCommand('txtsyntax.sendText', (args) => {
-    selectTerminal();
-    vscode.window.activeTerminal.sendText(args.text);
+    var term = selectTerminal();
+    term.sendText(args.text);
   });
 
   vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
