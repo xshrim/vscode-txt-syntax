@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.1.2
+
+- Support highlighting current line (forked from [cliffordfajardo/highlight-line-vscode](https://github.com/cliffordfajardo/highlight-line-vscode))
+- Support highlighting multiple selected words in all active editors (forked from [rsbondi/highlight-words](https://github.com/rsbondi/highlight-words))
+
 ## v0.1.1
 
 - Support codelens for Makefile to make running makefile target easily

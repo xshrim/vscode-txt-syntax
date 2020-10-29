@@ -1,7 +1,9 @@
 const vscode = require('vscode');
+const config = require("./config");
 const path = require("path");
 const process = require('process');
-const clp = require("./CodelensProvider");
+const clp = require("./codelensProvider");
+const hl = require("./highlight");
 
 // https://macromates.com/manual/en/language_grammars
 // https://xshrim.visualstudio.com/_usersSettings/tokens
@@ -48,6 +50,7 @@ function revealPosition(line, column) {
 }
 
 async function activate(context) {
+  /////////////// codelens
   const codelensProvider = new clp.CodelensProvider();
   vscode.languages.registerCodeLensProvider("makefile", codelensProvider);
   vscode.commands.registerCommand("txtsyntax.enableCodeLens", () => {
@@ -67,6 +70,244 @@ async function activate(context) {
     term.sendText(args.text);
   });
 
+  /////////////// highlight line
+  if (vscode.workspace.getConfiguration("txtsyntax").get("enableHighlightLine", true)) {
+    let decorationType = getDecorationTypeFromConfig();
+    let activeEditor = vscode.window.activeTextEditor;
+    let lastActivePosition;
+
+    vscode.window.onDidChangeActiveTextEditor(() => {
+      try {
+        activeEditor = vscode.window.activeTextEditor
+        updateDecorations(decorationType)
+      } catch (error) {
+        console.error("Error from ' window.onDidChangeActiveTextEditor' -->", error)
+      } finally {
+        if (activeEditor !== undefined) {
+          lastActivePosition = new vscode.Position(activeEditor.selection.active.line, activeEditor.selection.active.character);
+        }
+      }
+    })
+
+    vscode.window.onDidChangeTextEditorSelection(() => {
+      activeEditor = vscode.window.activeTextEditor;
+      updateDecorations(decorationType);
+    })
+
+    vscode.workspace.onDidChangeConfiguration(() => {
+      //clear all decorations
+      decorationType.dispose();
+      decorationType = getDecorationTypeFromConfig();
+      updateDecorations(decorationType, true)
+    })
+
+    function getDecorationTypeFromConfig() {
+      const config = vscode.workspace.getConfiguration("txtsyntax")
+      const borderColor = config.get("highlightLineBorderColor");
+      const borderWidth = config.get("highlightLineBorderWidth");
+      const borderStyle = config.get("highlightLineBorderStyle");
+      const decorationType = vscode.window.createTextEditorDecorationType({
+        isWholeLine: true,
+        borderWidth: `0 0 ${borderWidth} 0`,
+        borderStyle: `${borderStyle}`, //TODO: file bug, this shouldn't throw a lint error.
+        borderColor
+      })
+      return decorationType;
+    }
+
+    function updateDecorations(decorationType, updateAllVisibleEditors = false) {
+      try {
+        if (updateAllVisibleEditors) {
+          vscode.window.visibleTextEditors.forEach((editor) => {
+            const currentPosition = editor.selection.active;
+            const currentLine = editor.selection.active.line;
+            const newDecoration = { range: new vscode.Range(currentPosition, currentPosition) };
+            editor.setDecorations(decorationType, [newDecoration]);
+          });
+        }
+
+        //edit only currently active editor
+        else {
+          vscode.window.visibleTextEditors.forEach((editor) => {
+            if (editor !== vscode.window.activeTextEditor) return;
+
+            const currentPosition = editor.selection.active
+            const newDecoration = { range: new vscode.Range(currentPosition, currentPosition) }
+
+            if (lastActivePosition === undefined) {
+              editor.setDecorations(decorationType, [newDecoration])
+            } else {
+              const editorHasChangedLines = lastActivePosition.line !== currentPosition.line
+              const isNewEditor = activeEditor.document.lineCount === 1 && lastActivePosition.line === 0 && lastActivePosition.character == 0;
+              if (editorHasChangedLines || isNewEditor) {
+                editor.setDecorations(decorationType, [newDecoration])
+              }
+            }
+          });
+        }
+      }
+      catch (error) {
+        console.error("Error from ' updateDecorations' -->", error)
+      } finally {
+        if (activeEditor !== undefined) {
+          lastActivePosition = new vscode.Position(activeEditor.selection.active.line, activeEditor.selection.active.character);
+        }
+      }
+    }
+  };
+
+  ////////////// highlight words
+  let highlight = new hl.default();
+  let configValues;
+  vscode.commands.registerCommand('txtsyntax.toggleRegExpHighlight', function () {
+    vscode.window.showInputBox({ prompt: 'Enter expression' })
+      .then(word => {
+        highlight.toggleRegExp(word);
+      });
+  });
+  vscode.commands.registerCommand('txtsyntax.toggleHighlight', function () {
+    highlight.toggleSelected();
+  });
+  vscode.commands.registerCommand('txtsyntax.toggleHighlightWithOptions', function () {
+    highlight.toggleSelected(true);
+  });
+  vscode.commands.registerCommand('txtsyntax.removeHighlight', function () {
+    vscode.window.showQuickPick(highlight.getWords().concat([{ expression: '* All *', wholeWord: false, ignoreCase: false }]).map(w => {
+      return {
+        label: w.expression,
+        description: (w.ignoreCase ? 'i' : '') + (w.wholeWord ? 'w' : ''),
+        detail: ''
+      };
+    }))
+      .then(word => {
+        highlight.remove(word);
+      });
+  });
+  vscode.commands.registerCommand('txtsyntax.treeRemoveHighlight', e => {
+    highlight.remove(e);
+  });
+  vscode.commands.registerCommand('txtsyntax.treeHighlightOptions', e => {
+    highlight.updateOptions(e.label);
+  });
+  vscode.commands.registerCommand('txtsyntax.cleanHighlights', function () {
+    highlight.clearAll();
+  });
+  vscode.commands.registerCommand('txtsyntax.toggleSidebar', function () {
+    configValues.showSidebar = !configValues.showSidebar;
+    vscode.commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar);
+  });
+  vscode.commands.registerCommand('txtsyntax.setHighlightMode', function () {
+    const modes = ['Default', 'Whole Word', 'Ignore Case', 'Both'].map((s, i) => highlight.getMode() == i ? s + ' ✅' : s);
+    vscode.window.showQuickPick(modes).then(option => {
+      if (typeof option === 'undefined')
+        return;
+      highlight.setMode(modes.indexOf(option));
+    });
+  });
+  function next(e, wrap) {
+    const doc = vscode.window.activeTextEditor.document;
+    const ed = vscode.window.activeTextEditor;
+    const offset = wrap ? 0 : doc.offsetAt(ed.selection.active);
+    const nextStart = wrap ? 0 : 1;
+    const text = doc.getText();
+    const slice = text.slice(offset + nextStart);
+    const opts = e.highlight.ignoreCase ? 'i' : '';
+    const expression = e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression;
+    const re = new RegExp(expression, opts);
+    const pos = slice.search(re);
+    if (pos == -1) {
+      if (!wrap) {
+        next(e, true);
+      } // wrap
+      else
+        highlight.getLocationIndex(e.highlight.expression, new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)));
+      return;
+    }
+    const word = slice.match(re);
+    const start = doc.positionAt(pos + offset + nextStart);
+    const end = new vscode.Position(start.line, start.character + word[0].length);
+    const range = new vscode.Range(start, end);
+    vscode.window.activeTextEditor.revealRange(range);
+    vscode.window.activeTextEditor.selection = new vscode.Selection(start, start);
+    highlight.getLocationIndex(e.highlight.expression, range);
+  }
+  vscode.commands.registerCommand('txtsyntax.findNext', e => {
+    next(e);
+  });
+  function prev(e, wrap) {
+    const doc = vscode.window.activeTextEditor.document;
+    const ed = vscode.window.activeTextEditor;
+    const iAmHere = ed.selection.active;
+    const offset = doc.offsetAt(iAmHere);
+    const text = doc.getText();
+    const slice = text.slice(0, offset);
+    const opts = e.highlight.ignoreCase ? 'gi' : 'g';
+    const expression = e.highlight.wholeWord ? '\\b' + e.highlight.expression + '\\b' : e.highlight.expression;
+    const re = new RegExp(expression, opts);
+    const pos = slice.search(re);
+    if (pos == -1) {
+      if (!wrap) {
+        if (offset != 0) {
+          const home = doc.positionAt(text.length - 1);
+          vscode.window.activeTextEditor.selection = new vscode.Selection(home, home);
+          prev(e, true);
+          return;
+        }
+      }
+      else
+        highlight.getLocationIndex(e.highlight.expression, new vscode.Range(new vscode.Position(1, 1), new vscode.Position(1, 1)));
+    }
+    let word;
+    let found;
+    let index;
+    while ((found = re.exec(slice)) !== null) {
+      index = re.lastIndex;
+      word = found[0];
+      console.log('last index', index);
+    }
+    const start = doc.positionAt(index - word.length);
+    const range = new vscode.Range(start, start);
+    vscode.window.activeTextEditor.revealRange(range);
+    vscode.window.activeTextEditor.selection = new vscode.Selection(start, start);
+    highlight.getLocationIndex(e.highlight.expression, range);
+  }
+  vscode.commands.registerCommand('txtsyntax.findPrevious', e => {
+    prev(e);
+  });
+  updateConfig();
+  function updateConfig() {
+    configValues = config.default.getConfigValues();
+    highlight.setDecorators(configValues.decorators);
+    highlight.setMode(configValues.defaultMode);
+    vscode.commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar);
+  }
+  let activeEditor = vscode.window.activeTextEditor;
+  if (activeEditor) {
+    triggerUpdateDecorations();
+  }
+  vscode.workspace.onDidChangeConfiguration(() => {
+    updateConfig();
+  });
+  vscode.window.onDidChangeVisibleTextEditors(function (editor) {
+    highlight.updateDecorations();
+  }, null, context.subscriptions);
+  vscode.workspace.onDidChangeTextDocument(function (event) {
+    activeEditor = vscode.window.activeTextEditor;
+    if (activeEditor && event.document === activeEditor.document) {
+      triggerUpdateDecorations();
+    }
+  }, null, context.subscriptions);
+  var timeout = null;
+  function triggerUpdateDecorations() {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      highlight.updateActive();
+    }, 500);
+  };
+
+  ////////////// open file
   vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
     // var f = vscode.Uri.file(documentObj.fsPath);
     var editor = vscode.window.activeTextEditor
@@ -104,6 +345,8 @@ async function activate(context) {
     //   })
     // })
   });
+
+  ////////////// txt syntax
   disposable = vscode.languages.registerFoldingRangeProvider('txt', {   //{ scheme: 'file', language: 'txt' }
     provideFoldingRanges(document, context, token) {
       // console.log('folding range invoked'); // comes here on every character edit
@@ -146,7 +389,11 @@ async function activate(context) {
   });
 }
 
+function deactivate() {
+}
+
 exports.activate = activate;
+exports.deactivate = deactivate;
 
 module.exports = {
   activate

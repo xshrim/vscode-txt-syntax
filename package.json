@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf and other config files",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -17,7 +17,11 @@
     "text",
     "syntax",
     "makefile",
-    "codelens"
+    "codelens",
+    "highlight",
+    "txt folding",
+    "highlight line",
+    "highlight words"
   ],
   "activationEvents": [
     "*"
@@ -45,6 +49,7 @@
           ".temp",
           ".file",
           ".repo",
+          ".plain",
           ".properties"
         ],
         "configuration": "./txt.language-configuration.json"
@@ -59,7 +64,7 @@
     ],
     "commands": [
       {
-        "title": "TXT: Open File",
+        "title": "Open File",
         "command": "txtsyntax.openit",
         "category": "TxtSyntax"
       },
@@ -77,6 +82,69 @@
         "title": "Send text to Terminal",
         "command": "txtsyntax.sendText",
         "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.toggleHighlight",
+        "title": "Highlight Toggle Current",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.removeHighlight",
+        "title": "Highlight Remove List",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.cleanHighlights",
+        "title": "Highlight Clean",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.toggleRegExpHighlight",
+        "title": "Highlight Expression",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.toggleHighlightWithOptions",
+        "title": "Highlight Selection with Options",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.setHighlightMode",
+        "title": "Set Highlight Mode",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.treeRemoveHighlight",
+        "title": "Remove",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.treeHighlightOptions",
+        "title": "Change Options",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.toggleSidebar",
+        "title": "Highlight Toggle Sidebar",
+        "category": "TxtSyntax"
+      },
+      {
+        "command": "txtsyntax.findPrevious",
+        "title": "Highlight Back",
+        "category": "TxtSyntax",
+        "icon": {
+          "light": "resources/icons/arrow-left.svg",
+          "dark": "resources/icons/arrow-left-white.svg"
+        }
+      },
+      {
+        "command": "txtsyntax.findNext",
+        "title": "Highlight Next",
+        "category": "TxtSyntax",
+        "icon": {
+          "light": "resources/icons/arrow-right.svg",
+          "dark": "resources/icons/arrow-right-white.svg"
+        }
       }
     ],
     "configuration": {
@@ -84,8 +152,98 @@
         "txtsyntax.enableCodeLens": {
           "type": "boolean",
           "default": true
+        },
+        "txtsyntax.enableHighlightLine": {
+          "type": "boolean",
+          "default": false
+        },
+        "txtsyntax.highlightLineBorderColor": {
+          "type": [
+            "string"
+          ],
+          "default": "#65EAB9",
+          "description": "Change the border color. (Ex: 'red', '#FFF' #FFFFFFF, 'RGB(255,255,255)','RGB(255, 255, 255. 0.5) )"
+        },
+        "txtsyntax.highlightLineBorderWidth": {
+          "type": [
+            "string"
+          ],
+          "default": "1px"
+        },
+        "txtsyntax.highlightLineBorderStyle": {
+          "type": [
+            "string"
+          ],
+          "enum": [
+            "solid",
+            "dashed",
+            "inset",
+            "double",
+            "groove",
+            "outset",
+            "ridge"
+          ],
+          "default": "dashed"
+        },
+        "txtsyntax.highlightColors": {
+          "default": [
+            {
+              "light": "#b3d9ff",
+              "dark": "cyan"
+            },
+            {
+              "light": "#e6ffb3",
+              "dark": "pink"
+            },
+            {
+              "light": "#b3b3ff",
+              "dark": "lightgreen"
+            },
+            {
+              "light": "#ffd9b3",
+              "dark": "magenta"
+            },
+            {
+              "light": "#ffb3ff",
+              "dark": "cornflowerblue"
+            },
+            {
+              "light": "#b3ffb3",
+              "dark": "orange"
+            },
+            {
+              "light": "#ffff80",
+              "dark": "green"
+            },
+            {
+              "light": "#d1e0e0",
+              "dark": "red"
+            }
+          ]
+        },
+        "txtsyntax.highlightBox": {
+          "default": {
+            "light": false,
+            "dark": true
+          }
+        },
+        "txtsyntax.defaultHighlightMode": {
+          "default": 0
+        },
+        "txtsyntax.showHighlightSidebar": {
+          "type": "boolean",
+          "default": false
         }
       }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "txtsyntaxHighlightExplore",
+          "name": "Highlight",
+          "when": "showSidebar"
+        }
+      ]
     },
     "menus": {
       "editor/context": [
@@ -93,6 +251,51 @@
           "command": "txtsyntax.openit",
           "group": "txsyntax",
           "when": "editorTextFocus && resourceLangId == txt"
+        },
+        {
+          "command": "txtsyntax.toggleHighlight",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "txtsyntax.removeHighlight",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "txtsyntax.cleanHighlights",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "txtsyntax.findPrevious",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        },
+        {
+          "command": "txtsyntax.findNext",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "txtsyntax.treeRemoveHighlight",
+          "when": "view == txtsyntaxHighlightExplore"
+        },
+        {
+          "command": "txtsyntax.treeHighlightOptions",
+          "when": "view == txtsyntaxHighlightExplore"
+        },
+        {
+          "command": "txtsyntax.findPrevious",
+          "when": "view == txtsyntaxHighlightExplore",
+          "group": "inline"
+        },
+        {
+          "command": "txtsyntax.findNext",
+          "when": "view == txtsyntaxHighlightExplore",
+          "group": "inline"
         }
       ]
     }

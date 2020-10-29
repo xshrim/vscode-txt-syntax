@@ -2,15 +2,23 @@
 
 ## Features
 
-- Highlight several text files.
+- Highlight syntax for several text files.
 
-- Allow to open the file under the current cursor through the right-click menu "TXT: Open File".
+- Open the file under the current cursor through the right-click menu "Open File".
 
-- Support simple folding function.
+- Simple folding function.
 
-- Support codelens for Makefile to make running makefile target easily.
+- Add codelens for Makefile to make running makefile target easily.
+
+- Highlight current line.
+
+- Highlight multiple selected words in all active editors.
 
 *folding function need you set `"editor.foldingStrategy": "auto"`.*
+
+*highlight line feature is forked from [cliffordfajardo/highlight-line-vscode](https://github.com/cliffordfajardo/highlight-line-vscode)*
+
+*highlight words feature is forked from [rsbondi/highlight-words](https://github.com/rsbondi/highlight-words)*
 
 ## Supported file types
 
@@ -28,6 +36,7 @@
 .temp
 .file
 .repo
+.plain
 .properties
 ```
 
