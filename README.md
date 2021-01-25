@@ -29,6 +29,7 @@
 .cnf
 .cfg
 .conf
+.eds
 .log
 .ini
 .out

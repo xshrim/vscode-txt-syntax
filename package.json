@@ -1,8 +1,8 @@
 {
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
-  "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf and other config files",
-  "version": "0.1.3",
+  "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf, .eds and other config files",
+  "version": "0.1.4",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -43,6 +43,7 @@
           ".cnf",
           ".cfg",
           ".conf",
+          ".eds",
           ".log",
           ".out",
           ".tmp",
