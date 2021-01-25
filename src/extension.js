@@ -3,7 +3,9 @@ const config = require("./config");
 const path = require("path");
 const process = require('process');
 const clp = require("./codelensProvider");
+const dsp = require("./documentSymbolProvider");
 const hl = require("./highlight");
+const { deepStrictEqual } = require('assert');
 
 // https://macromates.com/manual/en/language_grammars
 // https://xshrim.visualstudio.com/_usersSettings/tokens
@@ -50,8 +52,13 @@ function revealPosition(line, column) {
 }
 
 async function activate(context) {
+  /////////////// outline
+  const documentSymbolProvider = new dsp.DocumentSymbolProvider();
+  context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("txt", documentSymbolProvider)); // { scheme: "file", language: "txt" }
+
   /////////////// codelens
   const codelensProvider = new clp.CodelensProvider();
+
   vscode.languages.registerCodeLensProvider("makefile", codelensProvider);
   vscode.commands.registerCommand("txtsyntax.enableCodeLens", () => {
     vscode.workspace.getConfiguration("txtsyntax").update("enableCodeLens", true, true);
@@ -354,7 +361,7 @@ async function activate(context) {
       let blre = /^[^\r\n\'\"]*\{/, brre = /^[^\r\n\'\"]*\}/;
       // let bpre = /^[^\S\r\n]*\<([^/\s]+)\>/, bqre = /^[^\S\r\n]*\<\/([^\s]+)\>/;
       let bpre = /<([^/\s]+)\>/, bqre = /\<\/([^\s]+)\>/;
-      let re = /^-\*-|^\*[^\S\r\n]|^[A-Z0-9]+\.|^\[.+\]\s*|^(Section|SECTION|Chapter|CHAPTER|Sheet|SHEET|Season|SEASON|Period|PERIOD|Round|ROUND|Class|CLASS|Term|TERM|Part|PART|Page|PAGE|Segment|SEGMENT|Paragraph|PARAGRAPH|Lesson|LESSON|Region|REGION|Step|STEP|Level|LEVEL|Set|SET|Grade|GRADE|Year|YEAR|Month|MONTH|Week|WEEK|Day|DAY)[^\S\r\n][A-Z0-9]+\.?($|[^\S\r\n])|^(第[^\S\r\n]|第)?[一二三四五六七八九十百千万亿兆零壹贰叁肆伍陆柒捌玖拾佰仟甲乙丙丁戊已庚辛壬癸子丑寅卯辰已午未申酉戍亥]+($|[^\S\r\n])?[章节篇部回课页段组卷区季级集步年月周天轮个项类]?($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)?[0123456789]+[^\S\r\n]?([章节篇部回课页段组卷区季级集步年月周天轮个项类]?[\.、]|[章节篇部回课页段组卷区季级集步年月周天轮个项类][^\S\r\n])/;  // regex to detect start of region
+      let re = /^-\*-|^\*[^\S\r\n]|^[A-Z0-9]+\.\s|^\[.+\]\s*|^(Section|SECTION|Chapter|CHAPTER|Sheet|SHEET|Season|SEASON|Period|PERIOD|Round|ROUND|Class|CLASS|Term|TERM|Part|PART|Page|PAGE|Segment|SEGMENT|Paragraph|PARAGRAPH|Lesson|LESSON|Region|REGION|Step|STEP|Level|LEVEL|Set|SET|Grade|GRADE|Year|YEAR|Month|MONTH|Week|WEEK|Day|DAY)[^\S\r\n][A-Z0-9]+\.?($|[^\S\r\n])|^(第[^\S\r\n]|第)?[一二三四五六七八九十百千万亿兆零壹贰叁肆伍陆柒捌玖拾佰仟甲乙丙丁戊已庚辛壬癸子丑寅卯辰已午未申酉戍亥]+($|[^\S\r\n])?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]?($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)?[0123456789]+[^\S\r\n]?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)[0123456789]+($|[\.、]|[^\S\r\n])/;  // regex to detect start of region
 
       for (let i = 0; i < document.lineCount; i++) {
         if (blre.test(document.lineAt(i).text)) {

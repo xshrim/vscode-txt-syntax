@@ -6,7 +6,7 @@
 
 - Open the file under the current cursor through the right-click menu "Open File".
 
-- Simple folding function.
+- Simple folding and outline function.
 
 - Add codelens for Makefile to make running makefile target easily.
 

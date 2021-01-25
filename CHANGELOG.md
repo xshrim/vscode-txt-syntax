@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.1.3
+
+- Support outline for txt files with symbol marks
+- Fix some regex rules
+
 ## v0.1.2
 
 - Support highlighting current line (forked from [cliffordfajardo/highlight-line-vscode](https://github.com/cliffordfajardo/highlight-line-vscode))
@@ -16,7 +21,7 @@
 
 ## v0.0.9
 
-- Support folding braces and hypertext markups
+- Support folding braces and hypertext marks
 
 ## v0.0.8
 
