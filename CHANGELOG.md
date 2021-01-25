@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.4
+
+- Add .eds (the extension of industry standard text file format for describing automation equipment) to the supported languages
+
 ## v0.1.3
 
 - Support outline for txt files with symbol marks
