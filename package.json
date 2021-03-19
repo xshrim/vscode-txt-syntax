@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf, .eds and other config files",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -20,6 +20,7 @@
     "codelens",
     "highlight",
     "txt folding",
+    "filter lines",
     "highlight line",
     "highlight words"
   ],
@@ -41,16 +42,21 @@
           ".ini",
           ".cf",
           ".cnf",
-          ".cfg",
           ".conf",
+          ".cfg",
+          ".unx",
           ".eds",
           ".log",
           ".out",
+          ".err",
+          ".inf",
+          ".info",
           ".tmp",
           ".temp",
           ".file",
           ".repo",
           ".plain",
+          ".desktop",
           ".properties"
         ],
         "configuration": "./txt.language-configuration.json"
@@ -86,7 +92,7 @@
       },
       {
         "command": "txtsyntax.toggleHighlight",
-        "title": "Highlight Toggle Current",
+        "title": "Highlight Toggle",
         "category": "TxtSyntax"
       },
       {
@@ -146,6 +152,54 @@
           "light": "resources/icons/arrow-right.svg",
           "dark": "resources/icons/arrow-right-white.svg"
         }
+      },
+      {
+        "command": "txtsyntax.enableHighlight",
+        "title": "Enable Highlight",
+        "icon": "$(paintcan)"
+      },
+      {
+        "command": "txtsyntax.disableHighlight",
+        "title": "Disable Highlight",
+        "icon": "$(paintcan)"
+      },
+      {
+        "command": "txtsyntax.enableVisibility",
+        "title": "Enable Visbility",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "txtsyntax.disableVisibility",
+        "title": "Disable Visbility",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "txtsyntax.toggleFocusMode",
+        "title": "Toggle Focus Mode",
+        "icon": "$(symbol-keyword)"
+      },
+      {
+        "command": "txtsyntax.deleteFilter",
+        "title": "Delete This Filter",
+        "icon": "$(dialog-close)"
+      },
+      {
+        "command": "txtsyntax.editFilter",
+        "title": "Edit Regex for This Filter",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "txtsyntax.addFilter",
+        "title": "Add a Filter",
+        "icon": "$(plus)"
+      },
+      {
+        "command": "txtsyntax.exportFilters",
+        "title": "Export Filters"
+      },
+      {
+        "command": "txtsyntax.importFilters",
+        "title": "Import Filters"
       }
     ],
     "configuration": {
@@ -243,6 +297,10 @@
           "id": "txtsyntaxHighlightExplore",
           "name": "Highlight",
           "when": "showSidebar"
+        },
+        {
+          "id": "filters",
+          "name": "Filters"
         }
       ]
     },
@@ -255,11 +313,6 @@
         },
         {
           "command": "txtsyntax.toggleHighlight",
-          "group": "txsyntax",
-          "when": "editorTextFocus"
-        },
-        {
-          "command": "txtsyntax.removeHighlight",
           "group": "txsyntax",
           "when": "editorTextFocus"
         },
@@ -297,6 +350,56 @@
           "command": "txtsyntax.findNext",
           "when": "view == txtsyntaxHighlightExplore",
           "group": "inline"
+        },
+        {
+          "command": "txtsyntax.editFilter",
+          "when": "view == filters",
+          "group": "inline@1"
+        },
+        {
+          "command": "txtsyntax.disableHighlight",
+          "when": "view == filters && viewItem =~ /^lit/",
+          "group": "inline@2"
+        },
+        {
+          "command": "txtsyntax.enableHighlight",
+          "when": "view == filters && viewItem =~ /^unlit/",
+          "group": "inline@3"
+        },
+        {
+          "command": "txtsyntax.disableVisibility",
+          "when": "view == filters && viewItem =~ /-visible/",
+          "group": "inline@4"
+        },
+        {
+          "command": "txtsyntax.enableVisibility",
+          "when": "view == filters && viewItem =~ /-invisible/",
+          "group": "inline@5"
+        },
+        {
+          "command": "txtsyntax.deleteFilter",
+          "when": "view == filters",
+          "group": "inline@6"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "txtsyntax.addFilter",
+          "when": "view == filters",
+          "group": "navigation"
+        },
+        {
+          "command": "txtsyntax.toggleFocusMode",
+          "when": "view == filters",
+          "group": "navigation"
+        },
+        {
+          "command": "txtsyntax.importFilters",
+          "when": "view == filters"
+        },
+        {
+          "command": "txtsyntax.exportFilters",
+          "when": "view == filters"
         }
       ]
     }

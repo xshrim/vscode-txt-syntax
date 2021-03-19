@@ -1,5 +1,11 @@
 # Change Log
 
+## v0.1.5
+
+- Support filter and focus on lines based on custom regular expressions (forked from [XinyaYang0506/log-analysis](https://github.com/XinyaYang0506/log-analysis))
+- Add .err, .inf, .info, .unx, .desktop files to the supported languages
+- Fixed some folding bugs
+
 ## v0.1.4
 
 - Add .eds (the extension of industry standard text file format for describing automation equipment) to the supported languages

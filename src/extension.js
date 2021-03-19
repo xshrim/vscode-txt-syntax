@@ -5,10 +5,18 @@ const process = require('process');
 const clp = require("./codelensProvider");
 const dsp = require("./documentSymbolProvider");
 const hl = require("./highlight");
+const utils = require("./utils");
+const filterCommands = require("./filterCommands");
+const focusProvider = require("./focusProvider");
+const filterTreeViewProvider = require("./filterTreeViewProvider");
 const { deepStrictEqual } = require('assert');
 
 // https://macromates.com/manual/en/language_grammars
 // https://xshrim.visualstudio.com/_usersSettings/tokens
+// https://code.visualstudio.com/api/references/icons-in-labels
+
+//GLOBAL to be used for activate and deactivate
+let storageUri;
 
 function selectTerminal() {
   if (vscode.window.terminals.length === 0) {
@@ -270,7 +278,7 @@ async function activate(context) {
     while ((found = re.exec(slice)) !== null) {
       index = re.lastIndex;
       word = found[0];
-      console.log('last index', index);
+      //console.log('last index', index);
     }
     const start = doc.positionAt(index - word.length);
     const range = new vscode.Range(start, start);
@@ -313,6 +321,61 @@ async function activate(context) {
       highlight.updateActive();
     }, 500);
   };
+
+  ////////////// filter lines
+  storageUri = context.globalStorageUri; //get the store path
+  utils.cleanUpIconFiles(storageUri); //clean up the old icon files
+  const filterArr = [];
+  const state = {
+    inFocusMode: false,
+    filterArr,
+    decorations: [],
+    disposableFoldingRange: null,
+    filterTreeViewProvider: new filterTreeViewProvider.FilterTreeViewProvider(filterArr),
+    focusProvider: new focusProvider.FocusProvider(filterArr),
+    storageUri
+  };
+  //tell vs code to open focus:... uris with state.focusProvider
+  vscode.workspace.registerTextDocumentContentProvider('focus', state.focusProvider);
+  //register filterTreeViewProvider under id 'filters' which gets attached
+  //to the file explorer according to package.json's contributes>views>explorer
+  vscode.window.registerTreeDataProvider('filters', state.filterTreeViewProvider);
+  //Add events listener
+  var disposableOnDidChangeVisibleTextEditors = vscode.window.onDidChangeVisibleTextEditors(event => {
+    filterCommands.refreshEditors(state);
+  });
+  context.subscriptions.push(disposableOnDidChangeVisibleTextEditors);
+  var disposableOnDidChangeTextDocument = vscode.workspace.onDidChangeTextDocument(event => {
+    filterCommands.refreshEditors(state);
+  });
+  context.subscriptions.push(disposableOnDidChangeTextDocument);
+  var disposableOnDidChangeActiveTextEditor = vscode.window.onDidChangeActiveTextEditor(event => {
+    //update the filter counts for the current activate editor
+    filterCommands.applyHighlight(state, vscode.window.visibleTextEditors);
+    state.filterTreeViewProvider.refresh();
+  });
+  context.subscriptions.push(disposableOnDidChangeActiveTextEditor);
+  //register commands
+  let disposableExport = vscode.commands.registerCommand("txtsyntax.exportFilters", () => filterCommands.exportFilters(state));
+  context.subscriptions.push(disposableExport);
+  let disposableImport = vscode.commands.registerCommand("txtsyntax.importFilters", () => filterCommands.importFilters(state));
+  context.subscriptions.push(disposableImport);
+  let disposableEnableVisibility = vscode.commands.registerCommand("txtsyntax.enableVisibility", (filterTreeItem) => filterCommands.setVisibility(true, filterTreeItem, state));
+  context.subscriptions.push(disposableEnableVisibility);
+  let disposableDisableVisibility = vscode.commands.registerCommand("txtsyntax.disableVisibility", (filterTreeItem) => filterCommands.setVisibility(false, filterTreeItem, state));
+  context.subscriptions.push(disposableDisableVisibility);
+  let disposableToggleFocusMode = vscode.commands.registerCommand("txtsyntax.toggleFocusMode", () => filterCommands.toggleFocusMode(state));
+  context.subscriptions.push(disposableToggleFocusMode);
+  let disposibleAddFilter = vscode.commands.registerCommand("txtsyntax.addFilter", () => filterCommands.addFilter(state));
+  context.subscriptions.push(disposibleAddFilter);
+  let disposibleEditFilter = vscode.commands.registerCommand("txtsyntax.editFilter", (filterTreeItem) => filterCommands.editFilter(filterTreeItem, state));
+  context.subscriptions.push(disposibleEditFilter);
+  let disposibleDeleteFilter = vscode.commands.registerCommand("txtsyntax.deleteFilter", (filterTreeItem) => filterCommands.deleteFilter(filterTreeItem, state));
+  context.subscriptions.push(disposibleDeleteFilter);
+  let disposibleEnableHighlight = vscode.commands.registerCommand("txtsyntax.enableHighlight", (filterTreeItem) => filterCommands.setHighlight(true, filterTreeItem, state));
+  context.subscriptions.push(disposibleEnableHighlight);
+  let disposibleDisableHighlight = vscode.commands.registerCommand("txtsyntax.disableHighlight", (filterTreeItem) => filterCommands.setHighlight(false, filterTreeItem, state));
+  context.subscriptions.push(disposibleDisableHighlight);
 
   ////////////// open file
   vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
@@ -358,32 +421,39 @@ async function activate(context) {
     provideFoldingRanges(document, context, token) {
       // console.log('folding range invoked'); // comes here on every character edit
       let sectionStart = -1, BS = [], BP = new Array(), FR = [];
-      let blre = /^[^\r\n\'\"]*\{/, brre = /^[^\r\n\'\"]*\}/;
+      let blre = /^[^\r\n]*\{/, brre = /^[^\r\n]*\}/, btre = /^[^\r\n]*\}[^\r\n]*\{/;
       // let bpre = /^[^\S\r\n]*\<([^/\s]+)\>/, bqre = /^[^\S\r\n]*\<\/([^\s]+)\>/;
       let bpre = /<([^/\s]+)\>/, bqre = /\<\/([^\s]+)\>/;
       let re = /^-\*-|^\*[^\S\r\n]|^[A-Z0-9]+\.\s|^\[.+\]\s*|^(Section|SECTION|Chapter|CHAPTER|Sheet|SHEET|Season|SEASON|Period|PERIOD|Round|ROUND|Class|CLASS|Term|TERM|Part|PART|Page|PAGE|Segment|SEGMENT|Paragraph|PARAGRAPH|Lesson|LESSON|Region|REGION|Step|STEP|Level|LEVEL|Set|SET|Grade|GRADE|Year|YEAR|Month|MONTH|Week|WEEK|Day|DAY)[^\S\r\n][A-Z0-9]+\.?($|[^\S\r\n])|^(第[^\S\r\n]|第)?[一二三四五六七八九十百千万亿兆零壹贰叁肆伍陆柒捌玖拾佰仟甲乙丙丁戊已庚辛壬癸子丑寅卯辰已午未申酉戍亥]+($|[^\S\r\n])?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]?($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)?[0123456789]+[^\S\r\n]?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)[0123456789]+($|[\.、]|[^\S\r\n])/;  // regex to detect start of region
 
       for (let i = 0; i < document.lineCount; i++) {
-        if (blre.test(document.lineAt(i).text)) {
-          BS.push(i);
-        } else if (brre.test(document.lineAt(i).text) && BS.length > 0) {
+        let line = document.lineAt(i).text;
+        if (blre.test(line) && !btre.test(line)) {
+          let tmp = /^[^\r\n]*\{[^\r\n]*\}/;
+          if (!tmp.test(line)) {
+            BS.push(i);
+          }
+        } else if (brre.test(line) && BS.length > 0) {
           bstart = BS.pop();
-          FR.push(new vscode.FoldingRange(bstart, i, vscode.FoldingRangeKind.Region));
-        } else if (bpre.test(document.lineAt(i).text)) {
-          let item = bpre.exec(document.lineAt(i).text)[1];
+          FR.push(new vscode.FoldingRange(bstart, i - 1, vscode.FoldingRangeKind.Region));
+          if (btre.test(line)) {
+            BS.push(i);
+          }
+        } else if (bpre.test(line)) {
+          let item = bpre.exec(line)[1];
           if (BP[item] == undefined) {
             BP[item] = [];
           }
           BP[item].push(i);
-        } else if (bqre.test(document.lineAt(i).text)) {
-          let item = bqre.exec(document.lineAt(i).text)[1];
+        } else if (bqre.test(line)) {
+          let item = bqre.exec(line)[1];
           if (BP[item] != undefined && BP[item].length > 0) {
             pstart = BP[item].pop();
-            FR.push(new vscode.FoldingRange(pstart, i, vscode.FoldingRangeKind.Region));
+            FR.push(new vscode.FoldingRange(pstart, i - 1, vscode.FoldingRangeKind.Region));
           }
         }
 
-        if (re.test(document.lineAt(i).text)) {
+        if (re.test(line)) {
           if (sectionStart >= 0 && i > 0) {
             FR.push(new vscode.FoldingRange(sectionStart, i - 1, vscode.FoldingRangeKind.Region));
           }
@@ -397,6 +467,7 @@ async function activate(context) {
 }
 
 function deactivate() {
+  utils.cleanUpIconFiles(storageUri);
 }
 
 exports.activate = activate;

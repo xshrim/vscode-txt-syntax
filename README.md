@@ -3,22 +3,24 @@
 ## Features
 
 - Highlight syntax for several text files.
-
 - Open the file under the current cursor through the right-click menu "Open File".
-
 - Simple folding and outline function.
-
 - Add codelens for Makefile to make running makefile target easily.
-
 - Highlight current line.
-
 - Highlight multiple selected words in all active editors.
+- Filter and focus on lines based on custom regular expressions
 
 *folding function need you set `"editor.foldingStrategy": "auto"`.*
 
 *highlight line feature is forked from [cliffordfajardo/highlight-line-vscode](https://github.com/cliffordfajardo/highlight-line-vscode)*
 
 *highlight words feature is forked from [rsbondi/highlight-words](https://github.com/rsbondi/highlight-words)*
+
+*filter lines feature is forked from [XinyaYang0506/log-analysis](https://github.com/XinyaYang0506/log-analysis)*
+
+## overview
+
+![overview](https://ae01.alicdn.com/kf/Ud5876a1faff649ccac7592b696dcaeb4K.jpg)
 
 ## Supported file types
 
@@ -27,17 +29,22 @@
 .text
 .cf
 .cnf
-.cfg
 .conf
+.cfg
+.unx
 .eds
 .log
 .ini
 .out
+.err
+.inf
+.info
 .tmp
 .temp
 .file
 .repo
 .plain
+.desktop
 .properties
 ```
 
@@ -57,7 +64,7 @@ Page 1
 A. 
 1. 
 一 xx
-甲、xxx
+甲. xxx
 第一章 xxx
 第2回 xxx
 第 3 节 xxx
