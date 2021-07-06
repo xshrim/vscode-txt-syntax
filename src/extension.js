@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const config = require("./config");
+const hlconfig = require("./hlconfig");
 const path = require("path");
 const process = require('process');
 const clp = require("./codelensProvider");
@@ -60,6 +60,7 @@ function revealPosition(line, column) {
 }
 
 async function activate(context) {
+  const config = vscode.workspace.getConfiguration("txtsyntax");
   /////////////// outline
   const documentSymbolProvider = new dsp.DocumentSymbolProvider();
   context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("txt", documentSymbolProvider)); // { scheme: "file", language: "txt" }
@@ -85,8 +86,58 @@ async function activate(context) {
     term.sendText(args.text);
   });
 
+  /////////////// custom file associations
+  let associations = config.get("associations");
+  if (associations.length > 0) {
+    vscode.window.visibleTextEditors.forEach(editor => {
+      if (editor === undefined || editor.document === undefined || editor.document.isClosed) {
+        return
+      };
+
+      let fileExt = path.extname(editor.document.fileName).toLowerCase();
+      if (fileExt == "") {
+        return
+      };
+
+      if (associations.includes(fileExt)) {
+        vscode.languages.setTextDocumentLanguage(editor.document, "txt");
+      };
+    });
+  };
+
+  vscode.workspace.onDidOpenTextDocument((doc) => {
+    if (associations.length < 1 || doc === undefined || doc.isClosed) {
+      return
+    };
+
+    let fileExt = path.extname(doc.fileName).toLowerCase();
+    if (fileExt == "") {
+      return
+    };
+
+    if (associations.includes(fileExt)) {
+      vscode.languages.setTextDocumentLanguage(doc, "txt");
+    };
+  });
+
+  // vscode.window.onDidChangeActiveTextEditor((editor) => {
+  //   if (editor === undefined || editor.document === undefined || editor.document.isClosed) {
+  //     return
+  //   };
+
+  //   let fileExt = path.extname(editor.document.fileName).toLowerCase();
+  //   if (fileExt == "") {
+  //     return
+  //   };
+  //   console.log("========", fileExt)
+
+  //   if (associations.includes(fileExt)) {
+  //     vscode.languages.setTextDocumentLanguage(editor.document, "txt");
+  //   }
+  // });
+
   /////////////// highlight line
-  if (vscode.workspace.getConfiguration("txtsyntax").get("enableHighlightLine", true)) {
+  if (config.get("enableHighlightLine", true)) {
     let decorationType = getDecorationTypeFromConfig();
     let activeEditor = vscode.window.activeTextEditor;
     let lastActivePosition;
@@ -117,7 +168,6 @@ async function activate(context) {
     })
 
     function getDecorationTypeFromConfig() {
-      const config = vscode.workspace.getConfiguration("txtsyntax")
       const borderColor = config.get("highlightLineBorderColor");
       const borderWidth = config.get("highlightLineBorderWidth");
       const borderStyle = config.get("highlightLineBorderStyle");
@@ -291,7 +341,8 @@ async function activate(context) {
   });
   updateConfig();
   function updateConfig() {
-    configValues = config.default.getConfigValues();
+    associations = vscode.workspace.getConfiguration("txtsyntax").get("associations");
+    configValues = hlconfig.default.getConfigValues();
     highlight.setDecorators(configValues.decorators);
     highlight.setMode(configValues.defaultMode);
     vscode.commands.executeCommand('setContext', 'showSidebar', configValues.showSidebar);
@@ -420,48 +471,48 @@ async function activate(context) {
   disposable = vscode.languages.registerFoldingRangeProvider('txt', {   //{ scheme: 'file', language: 'txt' }
     provideFoldingRanges(document, context, token) {
       // console.log('folding range invoked'); // comes here on every character edit
-      let sectionStart = -1, BS = [], BP = new Array(), FR = [];
-      let blre = /^[^\r\n]*\{/, brre = /^[^\r\n]*\}/, btre = /^[^\r\n]*\}[^\r\n]*\{/;
-      // let bpre = /^[^\S\r\n]*\<([^/\s]+)\>/, bqre = /^[^\S\r\n]*\<\/([^\s]+)\>/;
-      let bpre = /<([^/\s]+)\>/, bqre = /\<\/([^\s]+)\>/;
-      let re = /^-\*-|^\*[^\S\r\n]|^[A-Z0-9]+\.\s|^\[.+\]\s*|^(Section|SECTION|Chapter|CHAPTER|Sheet|SHEET|Season|SEASON|Period|PERIOD|Round|ROUND|Class|CLASS|Term|TERM|Part|PART|Page|PAGE|Segment|SEGMENT|Paragraph|PARAGRAPH|Lesson|LESSON|Region|REGION|Step|STEP|Level|LEVEL|Set|SET|Grade|GRADE|Year|YEAR|Month|MONTH|Week|WEEK|Day|DAY)[^\S\r\n][A-Z0-9]+\.?($|[^\S\r\n])|^(第[^\S\r\n]|第)?[一二三四五六七八九十百千万亿兆零壹贰叁肆伍陆柒捌玖拾佰仟甲乙丙丁戊已庚辛壬癸子丑寅卯辰已午未申酉戍亥]+($|[^\S\r\n])?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]?($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)?[0123456789]+[^\S\r\n]?[章节篇部回课页段组卷区场季级集任步条年月日周天轮个项类期话]($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)[0123456789]+($|[\.、]|[^\S\r\n])/;  // regex to detect start of region
+      let sectionStart = -1, CodeBlocks = [], HtmlBlocks = new Array(), FoldingRanges = [];
+      let codeBlockLeftRegex = /^[^\r\n]*\{/, codeBlockRightRegex = /^[^\r\n]*\}/, codeBlockMiddleRegex = /^[^\r\n]*\}[^\r\n]*\{/;
+      // let htmlBlockStartRegex = /^[^\S\r\n]*\<([^/\s]+)\>/, htmlBlockEndRegex = /^[^\S\r\n]*\<\/([^\s]+)\>/;
+      let htmlBlockStartRegex = /<([^/\s]+)\s*.*\>/, htmlBlockEndRegex = /\<\/([^\s]+)\>/;
+      let re = /^-\*-|^\*[^\S\r\n]|^[A-Z0-9]+\.\s|^\[.+\]\s*|^(Section|SECTION|Chapter|CHAPTER|Sheet|SHEET|Season|SEASON|Period|PERIOD|Round|ROUND|Class|CLASS|Term|TERM|Part|PART|Page|PAGE|Segment|SEGMENT|Paragraph|PARAGRAPH|Lesson|LESSON|Region|REGION|Step|STEP|Level|LEVEL|Set|SET|Grade|GRADE|Year|YEAR|Month|MONTH|Week|WEEK|Day|DAY)[^\S\r\n][A-Z0-9]+\.?($|[^\S\r\n])|^(第[^\S\r\n]|第)?[一二三四五六七八九十百千万亿兆零壹贰叁肆伍陆柒捌玖拾佰仟甲乙丙丁戊已庚辛壬癸子丑寅卯辰已午未申酉戍亥]+($|[^\S\r\n])?[章节篇部回课页段组卷区场合季级集任步条年月日周天轮个项类期话例]?($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)?[0123456789]+[^\S\r\n]?[章节篇部回课页段组卷区场合季级集任步条年月日周天轮个项类期话例]($|[\.、]|[^\S\r\n])|^(第[^\S\r\n]|第)[0123456789]+($|[\.、]|[^\S\r\n])/;  // regex to detect start of region
 
       for (let i = 0; i < document.lineCount; i++) {
         let line = document.lineAt(i).text;
-        if (blre.test(line) && !btre.test(line)) {
+        if (codeBlockLeftRegex.test(line) && !codeBlockMiddleRegex.test(line)) {
           let tmp = /^[^\r\n]*\{[^\r\n]*\}/;
           if (!tmp.test(line)) {
-            BS.push(i);
+            CodeBlocks.push(i);
           }
-        } else if (brre.test(line) && BS.length > 0) {
-          bstart = BS.pop();
-          FR.push(new vscode.FoldingRange(bstart, i - 1, vscode.FoldingRangeKind.Region));
-          if (btre.test(line)) {
-            BS.push(i);
+        } else if (codeBlockRightRegex.test(line) && CodeBlocks.length > 0) {
+          codeBlockStart = CodeBlocks.pop();
+          FoldingRanges.push(new vscode.FoldingRange(codeBlockStart, i - 1, vscode.FoldingRangeKind.Region));
+          if (codeBlockMiddleRegex.test(line)) {
+            CodeBlocks.push(i);
           }
-        } else if (bpre.test(line)) {
-          let item = bpre.exec(line)[1];
-          if (BP[item] == undefined) {
-            BP[item] = [];
+        } else if (htmlBlockStartRegex.test(line)) {
+          let item = htmlBlockStartRegex.exec(line)[1];
+          if (HtmlBlocks[item] == undefined) {
+            HtmlBlocks[item] = [];
           }
-          BP[item].push(i);
-        } else if (bqre.test(line)) {
-          let item = bqre.exec(line)[1];
-          if (BP[item] != undefined && BP[item].length > 0) {
-            pstart = BP[item].pop();
-            FR.push(new vscode.FoldingRange(pstart, i - 1, vscode.FoldingRangeKind.Region));
+          HtmlBlocks[item].push(i);
+        } else if (htmlBlockEndRegex.test(line)) {
+          let item = htmlBlockEndRegex.exec(line)[1];
+          if (HtmlBlocks[item] != undefined && HtmlBlocks[item].length > 0) {
+            htmlBlockStart = HtmlBlocks[item].pop();
+            FoldingRanges.push(new vscode.FoldingRange(htmlBlockStart, i - 1, vscode.FoldingRangeKind.Region));
           }
         }
 
         if (re.test(line)) {
           if (sectionStart >= 0 && i > 0) {
-            FR.push(new vscode.FoldingRange(sectionStart, i - 1, vscode.FoldingRangeKind.Region));
+            FoldingRanges.push(new vscode.FoldingRange(sectionStart, i - 1, vscode.FoldingRangeKind.Region));
           }
           sectionStart = i;
         }
       }
-      if (sectionStart >= 0) { FR.push(new vscode.FoldingRange(sectionStart, document.lineCount - 1, vscode.FoldingRangeKind.Region)); }
-      return FR;
+      if (sectionStart >= 0) { FoldingRanges.push(new vscode.FoldingRange(sectionStart, document.lineCount - 1, vscode.FoldingRangeKind.Region)); }
+      return FoldingRanges;
     }
   });
 }

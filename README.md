@@ -2,7 +2,7 @@
 
 ## Features
 
-- Highlight syntax for several text files.
+- Highlight syntax for several text files with dynamic enable/disable languages.
 - Open the file under the current cursor through the right-click menu "Open File".
 - Simple folding and outline function.
 - Add codelens for Makefile to make running makefile target easily.
@@ -18,11 +18,11 @@
 
 *filter lines feature is forked from [XinyaYang0506/log-analysis](https://github.com/XinyaYang0506/log-analysis)*
 
-## overview
-
-![overview](https://ae01.alicdn.com/kf/Ud5876a1faff649ccac7592b696dcaeb4K.jpg)
-
 ## Supported file types
+
+#### default
+
+The following type types are supported by default:
 
 ```
 .txt
@@ -46,6 +46,29 @@
 .plain
 .desktop
 .properties
+```
+
+#### custom
+
+you can enable/disable every file type(except txt/text type) by any of the following method:
+
+```json
+// with txtsyntax configuration
+"txtsyntax.associations": [
+  ".tmp",
+  ".cnf",
+  ".log",
+  ".eds",
+  ".aaa"
+],
+// or with vscode configuration
+  "files.associations": {
+    "*.tmp": "txt",
+    "*.cnf": "txt",
+    "*.log": "txt",
+    "*.eds": "txt",
+    "*.aaa": "txt"
+  },
 ```
 
 ## Folding function

@@ -1,5 +1,12 @@
 # Change Log
 
+## v0.1.6
+
+- Support dynamic enable/disable languages
+- Support full regular expressions in the filter function
+- Fixed some highlight bugs
+- Fixed focus mod bug in the filter function
+
 ## v0.1.5
 
 - Support filter and focus on lines based on custom regular expressions (forked from [XinyaYang0506/log-analysis](https://github.com/XinyaYang0506/log-analysis))

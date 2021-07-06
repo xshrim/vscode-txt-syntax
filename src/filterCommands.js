@@ -43,6 +43,16 @@ function applyHighlight(state, editors) {
   });
 }
 exports.applyHighlight = applyHighlight;
+
+function regexFromString(string) {
+  var match = /^\/(.*)\/([a-z]*)$/.exec(string)
+  if (match !== null) {
+    return new RegExp(match[1], match[2])
+  } else {
+    return new RegExp(string)
+  }
+}
+
 //record the important fields of each filter on a json object and open a new tab for the json
 function exportFilters(state) {
   const content = JSON.stringify(state.filterArr.map(filter => {
@@ -86,7 +96,7 @@ function importFilters(state) {
         (typeof filterText.isShown === "boolean")) {
         const id = `${Math.random()}`;
         const filter = {
-          regex: new RegExp(filterText.regexText),
+          regex: regexFromString(filterText.regexText),
           color: filterText.color,
           isHighlighted: filterText.isHighlighted,
           isShown: filterText.isShown,
@@ -151,7 +161,7 @@ function addFilter(state) {
     const filter = {
       isHighlighted: true,
       isShown: true,
-      regex: new RegExp(regexStr),
+      regex: regexFromString(regexStr),
       color: utils.generateRandomColor(),
       id,
       iconPath: utils.generateSvgUri(state.storageUri, id, true),
@@ -174,7 +184,7 @@ function editFilter(filterTreeItem, state) {
     }
     const id = filterTreeItem.id;
     const filter = state.filterArr.find(filter => (filter.id === id));
-    filter.regex = new RegExp(regexStr);
+    filter.regex = regexFromString(regexStr);
     refreshEditors(state);
   });
 }
@@ -193,18 +203,21 @@ exports.setHighlight = setHighlight;
 //decoration of the visible focus mode virtual document, 
 //highlight decoration of visible editors
 //treeview on the side bar
+let focusDecorationType = vscode.window.createTextEditorDecorationType({
+  before: {
+    contentText: ">>>>>>>focus mode<<<<<<<",
+    color: "#888888",
+  }
+});
+
 function refreshEditors(state) {
   vscode.window.visibleTextEditors.forEach(editor => {
     let escapedUri = editor.document.uri.toString();
     if (escapedUri.startsWith('focus:')) {
       state.focusProvider.refresh(editor.document.uri);
-      let focusDecorationType = vscode.window.createTextEditorDecorationType({
-        before: {
-          contentText: ">>>>>>>focus mode<<<<<<<",
-          color: "#888888",
-        }
-      });
       let focusDecorationRangeArray = [new vscode.Range(new vscode.Position(0, 0), new vscode.Position(1, 0))];
+      //focusDecorationType.dispose();
+      //editor.setDecorations(focusDecorationType, []);
       editor.setDecorations(focusDecorationType, focusDecorationRangeArray);
     }
   });

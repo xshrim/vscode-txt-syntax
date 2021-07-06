@@ -1,8 +1,8 @@
 {
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
-  "description": "highlight the .txt, .out .tmp, .log, .ini, .cnf, .eds and other config files",
-  "version": "0.1.5",
+  "description": "highlight text files(.txt, .out .tmp, .log, .ini, .cnf ...) and provide general utility tools for text documents",
+  "version": "0.1.6",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -38,26 +38,7 @@
         ],
         "extensions": [
           ".txt",
-          ".text",
-          ".ini",
-          ".cf",
-          ".cnf",
-          ".conf",
-          ".cfg",
-          ".unx",
-          ".eds",
-          ".log",
-          ".out",
-          ".err",
-          ".inf",
-          ".info",
-          ".tmp",
-          ".temp",
-          ".file",
-          ".repo",
-          ".plain",
-          ".desktop",
-          ".properties"
+          ".text"
         ],
         "configuration": "./txt.language-configuration.json"
       }
@@ -204,6 +185,33 @@
     ],
     "configuration": {
       "properties": {
+        "txtsyntax.associations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".ini",
+            ".cf",
+            ".cnf",
+            ".conf",
+            ".cfg",
+            ".unx",
+            ".eds",
+            ".log",
+            ".out",
+            ".err",
+            ".inf",
+            ".info",
+            ".tmp",
+            ".temp",
+            ".file",
+            ".repo",
+            ".plain",
+            ".desktop",
+            ".properties"
+          ]
+        },
         "txtsyntax.enableCodeLens": {
           "type": "boolean",
           "default": true
