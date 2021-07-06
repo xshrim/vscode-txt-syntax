@@ -62,13 +62,13 @@ you can enable/disable every file type(except txt/text type) by any of the follo
   ".aaa"
 ],
 // or with vscode configuration
-  "files.associations": {
-    "*.tmp": "txt",
-    "*.cnf": "txt",
-    "*.log": "txt",
-    "*.eds": "txt",
-    "*.aaa": "txt"
-  },
+"files.associations": {
+  "*.tmp": "txt",
+  "*.cnf": "txt",
+  "*.log": "txt",
+  "*.eds": "txt",
+  "*.aaa": "txt"
+},
 ```
 
 ## Folding function
