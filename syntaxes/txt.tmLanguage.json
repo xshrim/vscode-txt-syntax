@@ -135,7 +135,15 @@
       "name": "keyword.other.definition.txt"
     },
     {
-      "match": "^\\[.+\\]\\s*$",
+      "match": "^\\$[^#]*",
+      "name": "entity.name.type.txt"
+    },
+    {
+      "match": "\\$[\\D_]\\S*",
+      "name": "variable.other.sign.txt"
+    },
+    {
+      "match": "^\\[.+?\\]\\s*$",
       "name": "keyword.other.definition.txt"
     },
     {
@@ -189,7 +197,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\[)(.*)(\\])",
+      "match": "(\\[)(.*?)(\\])",
       "name": "entity.name.function.txt"
     },
     {
@@ -201,7 +209,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\{)(.*)(\\})",
+      "match": "(\\{)(.*?)(\\})",
       "name": "entity.name.function.txt"
     },
     {
@@ -213,7 +221,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\()(.*)(\\))",
+      "match": "(\\()(.*?)(\\))",
       "name": "entity.name.function.txt"
     },
     {
@@ -225,7 +233,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\<)(.*)(\\>)",
+      "match": "(\\<)(.*?)(\\>)",
       "name": "entity.name.function.txt"
     },
     {
@@ -237,7 +245,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\【)(.*)(\\】)",
+      "match": "(【)(.*?)(】)",
       "name": "entity.name.function.txt"
     },
     {
@@ -249,7 +257,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\（)(.*)(\\）)",
+      "match": "(（)(.*?)(）)",
       "name": "entity.name.function.txt"
     },
     {
@@ -261,7 +269,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\＜)(.*)(\\＞)",
+      "match": "(＜)(.*?)(＞)",
       "name": "entity.name.function.txt"
     },
     {
@@ -273,7 +281,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\《)(.*)(\\》)",
+      "match": "(《)(.*?)(》)",
       "name": "entity.name.function.txt"
     },
     {
@@ -285,7 +293,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\〔)(.*)(\\〕)",
+      "match": "(〔)(.*?)(〕)",
       "name": "entity.name.function.txt"
     },
     {
@@ -297,7 +305,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\『)(.*)(\\』)",
+      "match": "(『)(.*?)(』)",
       "name": "entity.name.function.txt"
     },
     {
@@ -309,7 +317,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\﹃)(.*)(\\﹄)",
+      "match": "(﹃)(.*?)(﹄)",
       "name": "entity.name.function.txt"
     },
     {
@@ -321,7 +329,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\「)(.*)(\\」)",
+      "match": "(「)(.*?)(」)",
       "name": "entity.name.function.txt"
     },
     {
@@ -333,7 +341,7 @@
           "name": "entity.name.function.txt"
         }
       },
-      "match": "(\\［)(.*)(\\］)",
+      "match": "(［)(.*?)(］)",
       "name": "entity.name.function.txt"
     },
     {
@@ -379,27 +387,6 @@
       ]
     },
     {
-      "begin": "`",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.begin.txt"
-        }
-      },
-      "end": "`",
-      "endCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.end.txt"
-        }
-      },
-      "name": "string.quoted.doublecn.txt",
-      "patterns": [
-        {
-          "match": "\\\\.",
-          "name": "constant.character.escape.txt"
-        }
-      ]
-    },
-    {
       "captures": {
         "1": {
           "name": "string.quoted.single.txt"
@@ -408,23 +395,32 @@
           "name": "string.quoted.single.txt"
         }
       },
-      "match": "(\\')(.*?)(\\')",
+      "match": "(\\')(((?!s\\s).)*?)(\\')",
       "name": "string.quoted.single.txt"
     },
     {
-      "begin": "\"",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.begin.txt"
+      "captures": {
+        "1": {
+          "name": "string.quoted.double.txt"
+        },
+        "3": {
+          "name": "string.quoted.double.txt"
         }
       },
-      "end": "\"",
-      "endCaptures": {
-        "0": {
-          "name": "punctuation.definition.string.end.txt"
-        }
-      },
+      "match": "(\")(.*?)(\")",
       "name": "string.quoted.double.txt"
+    },
+    {
+      "captures": {
+        "1": {
+          "name": "string.quoted.double.txt"
+        },
+        "3": {
+          "name": "string.quoted.double.txt"
+        }
+      },
+      "match": "(`)(.*?)(`)",
+      "name": "string.quoted.doublecn.txt"
     },
     {
       "match": "\\,|\\.|\\,|\\，|\\。|\\－|\\……|\\──|\\___|\\——|\\—|\\-|\\_|\\+|\\=|\\*|\\&|\\;|\\；|\\、|\\:|\\：|\\·|\\!|\\！|\\@|\\$|\\%|\\^|\\/|\\?|\\？|\\~|\\～|\\／|\\\\|\\||\\<|\\>|\\(|\\)|\\{|\\}|\\[|\\]|\\《|\\》|\\（|\\）|\\【|\\】|\\￥|\\°|\\√|\\×|\\*|\\○|\\●|\\◇|\\◆|\\□|\\■|\\△|\\▲|\\▽|\\▼|\\▷|\\▶|\\◁|\\◀|\\☆|\\★|\\♤|\\♠|\\♡|\\♥|\\♢|\\♦|\\♧|\\♣|\\☼|\\☀|\\☺|\\☻|\\◘|\\◙|\\☏|\\☎|\\☜|\\☞|\\◐|\\◑|\\☽|\\☾|\\♀|\\♂|\\☑|\\☒|\\✔|\\✘|\\㏂|\\㏘|\\✎|\\✐|\\⊙|\\◎|\\✉|\\❤|\\▁|\\▂|\\▄|\\▇|\\☢|\\✄|\\☂|\\☉|\\☣|\\☄|\\☯|\\☪|\\☭|\\❂|\\✪|\\❉|\\❈|\\✲|\\◈|\\▣|\\⊿|\\⊕|\\Θ|\\▣|\\✚|\\✖|\\✙|\\۩|\\▫|\\❀|\\•|\\▪|\\⊹|\\✲|\\❦|\\◕|\\♞|\\☃|\\☪|\\®|\\©|\\™|\\℗|\\囍|\\№|\\☠|\\◤|\\◥|\\◣|\\◢|\\↖|\\↙|\\↗|\\↘|\\↑|\\↓|\\←|\\→|\\↔|\\↕|\\╱|\\╲|\\☍|\\☌|\\☋|\\▩|\\▨|\\▤|\\▥|\\▧|\\▦|\\㏇|\\➴|\\➵|\\✈|\\〄|\\㊤|\\㊥|\\㊦|\\㊧|\\㊨|\\㊚|\\㊛|\\㊣|\\㊙|\\㉿|\\㈱|\\⊱|\\⊰|\\⋌|\\§|\\‖|\\Ψ|\\๑|\\∮|\\♯|\\♭|\\¶|\\♬|\\♫|\\♪|\\♩|\\✧|\\✦|\\✢|\\✫|\\✡|\\✯|\\❉|\\❆|\\❶|\\❷|\\❸|\\❹|\\❺|\\❻|\\❼|\\❽|\\❾|\\❿|\\①|\\②|\\③|\\④|\\⑤|\\⑥|\\⑦|\\⑧|\\⑨|\\⑩|\\Ⅰ|\\Ⅱ|\\Ⅲ|\\Ⅳ|\\Ⅴ|\\Ⅵ|\\Ⅶ|\\Ⅷ|\\Ⅸ|\\Ⅹ|\\㊀|\\㊁|\\㊂|\\㊃|\\㊄|\\㊅|\\㊆|\\㊇|\\㊈|\\㊉|\\α|\\β|\\γ|\\δ|\\ε|\\ζ|\\η|\\θ|\\ι|\\κ|\\λ|\\μ|\\φ|\\ω|\\π|\\Σ|\\ρ|\\τ|\\Φ|\\Ψ|\\Ω|\\ψ|\\З|\\з|\\л|\\Л|\\ч|\\Ч|\\э|\\Э|\\ю|\\Ю|\\ф|\\Ф|\\¿|\\『|\\』|\\〔|\\〕|\\﹃|\\﹄|\\︻|\\︼|\\「|\\」|\\﹁|\\﹂|\\﹎|\\﹊|\\~|\\˜|\\ˇ|\\ˆ|\\﹏|\\◔|\\◓|\\◒|\\◌|\\◍|\\♔|\\♕|\\♖|\\♙|\\ღ|\\۵|\\≠|\\±|\\≤|\\≥|\\∈|\\∩|\\∪|\\÷|\\≌|\\∽|\\≮|\\≯|\\℃|\\℉|\\¤|\\λ|\\‰|\\∴|\\∵|\\½|\\¼|\\⅓|\\∠|\\⊥|\\≈|\\∫|\\➢|\\➛|\\➤|\\↺|\\↻|\\➭|\\↢|\\↣|\\⇧|\\⇨|\\⇦|\\⇩|\\⇑|\\⇒|\\⇓|\\⇔|\\⇕|\\⇐",

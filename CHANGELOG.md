@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.7
+
+- Fixed some highlight bugs
+
 ## v0.1.6
 
 - Support dynamic enable/disable languages
