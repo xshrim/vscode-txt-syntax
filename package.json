@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight text files(.txt, .out .tmp, .log, .ini, .cnf ...) and provide general utility tools for text documents",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
