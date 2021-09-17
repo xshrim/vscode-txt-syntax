@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.1.9
+
+- Fixed some highlight bugs
+
 ## v0.1.8
 
 - Fixed some highlight bugs

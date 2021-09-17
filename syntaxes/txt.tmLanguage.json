@@ -135,11 +135,11 @@
       "name": "keyword.other.definition.txt"
     },
     {
-      "match": "^\\$[^#]*",
+      "match": "^\\s*\\$[^#]*",
       "name": "entity.name.type.txt"
     },
     {
-      "match": "\\$[\\D_]\\S*",
+      "match": "\\$[A-Za-z_]\\S*",
       "name": "variable.other.sign.txt"
     },
     {
