@@ -4,6 +4,7 @@
 
 - Highlight syntax for several text files with dynamic enable/disable languages.
 - Open the file under the current cursor through the right-click menu "Open File".
+- Search selected word using custom search engine in the embeded simple browser.
 - Simple folding and outline function.
 - Add codelens for Makefile to make running makefile target easily.
 - Highlight current line.

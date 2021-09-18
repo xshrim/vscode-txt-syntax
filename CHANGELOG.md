@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.2.0
+
+- support searching word through right-click menu using a custom search engine({{keyword}} as placeholder)
+
 ## v0.1.9
 
 - Fixed some highlight bugs

@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight text files(.txt, .out .tmp, .log, .ini, .cnf ...) and provide general utility tools for text documents",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -51,6 +51,11 @@
       }
     ],
     "commands": [
+      {
+        "title": "Search Word",
+        "command": "txtsyntax.searchit",
+        "category": "TxtSyntax"
+      },
       {
         "title": "Open File",
         "command": "txtsyntax.openit",
@@ -185,6 +190,10 @@
     ],
     "configuration": {
       "properties": {
+        "txtsyntax.searchlink": {
+          "type": "string",
+          "default": "https://www.google.com/search?q={{keyword}}"
+        },
         "txtsyntax.associations": {
           "type": "array",
           "items": {
@@ -314,6 +323,11 @@
     },
     "menus": {
       "editor/context": [
+        {
+          "command": "txtsyntax.searchit",
+          "group": "txsyntax",
+          "when": "editorTextFocus"
+        },
         {
           "command": "txtsyntax.openit",
           "group": "txsyntax",

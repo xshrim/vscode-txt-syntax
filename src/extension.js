@@ -428,6 +428,30 @@ async function activate(context) {
   let disposibleDisableHighlight = vscode.commands.registerCommand("txtsyntax.disableHighlight", (filterTreeItem) => filterCommands.setHighlight(false, filterTreeItem, state));
   context.subscriptions.push(disposibleDisableHighlight);
 
+  ////////////// open codelf
+  vscode.commands.registerCommand("txtsyntax.searchit", (documentObj) => {
+    // var f = vscode.Uri.file(documentObj.fsPath);
+    var editor = vscode.window.activeTextEditor
+    if (editor) {
+      var keyword = editor.document.getText(editor.selection);
+      if (!keyword) {
+        const range = editor.document.getWordRangeAtPosition(editor.selection.start);
+        if (range) {
+          keyword = editor.document.getText(range);
+        }
+      }
+      if (keyword) {
+        let searchlink = vscode.workspace.getConfiguration("txtsyntax").get("searchlink");
+        if (!searchlink) {
+          searchlink = "https://www.google.com/search?q={{keyword}}";
+        }
+        searchlink = searchlink.replace(/{{keyword}}/g, keyword);
+        // var searchlink = `https://unbug.github.io/codelf/#${keyword}`
+        vscode.commands.executeCommand("simpleBrowser.show", searchlink);
+      }
+    }
+  });
+
   ////////////// open file
   vscode.commands.registerCommand("txtsyntax.openit", (documentObj) => {
     // var f = vscode.Uri.file(documentObj.fsPath);
