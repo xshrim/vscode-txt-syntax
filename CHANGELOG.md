@@ -1,8 +1,13 @@
 # Change Log
 
+## v0.2.1
+
+- Support german quotation marks
+- Fixed the error of heaven and earth branches
+
 ## v0.2.0
 
-- support searching word through right-click menu using a custom search engine({{keyword}} as placeholder)
+- Support searching word through right-click menu using a custom search engine({{keyword}} as placeholder)
 
 ## v0.1.9
 
