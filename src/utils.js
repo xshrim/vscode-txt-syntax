@@ -11,6 +11,8 @@ function cleanUpIconFiles(storageUri) {
   vscode.workspace.fs.delete(storageUri, {
     recursive: true,
     useTrash: false
+  }).then(undefined, (err) => {
+    if (err.name !== "EntryNotFound (FileSystemError)") throw err;
   });
 }
 exports.cleanUpIconFiles = cleanUpIconFiles;
