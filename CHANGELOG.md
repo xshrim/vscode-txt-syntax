@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.2.2
+
+- Fixed crash problem on vscode insider
+
 ## v0.2.1
 
 - Support german quotation marks
