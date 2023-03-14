@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight text files(.txt, .out .tmp, .log, .ini, .cnf ...) and provide general utility tools for text documents",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -224,6 +224,10 @@
         "txtsyntax.enableCodeLens": {
           "type": "boolean",
           "default": true
+        },
+        "txtsyntax.enableAutoImport": {
+          "type": "boolean",
+          "default": false
         },
         "txtsyntax.enableHighlightLine": {
           "type": "boolean",

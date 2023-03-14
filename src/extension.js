@@ -136,6 +136,28 @@ async function activate(context) {
   //   }
   // });
 
+
+  /////////////// auto quick fix
+  if (config.get("enableAutoImport", true)) {
+    vscode.workspace.onWillSaveTextDocument((e) => {
+      console.log("======================= will save")
+      if vscode.workspace.getConfiguration("editor").get("formatOnSave") {
+        // auto import
+        console.log("===============================auto import")
+        vscode.commands.executeCommand('editor.action.sourceAction', {
+			    "kind": "source.addMissingImports",
+			    "apply": "first"
+		    });
+        // auto format
+        // vscode.commands.executeCommand(
+        //   "editor.action.format",
+        //  activeEditor?.document.uri
+        // );
+      }
+    })
+
+  }
+
   /////////////// highlight line
   if (config.get("enableHighlightLine", true)) {
     let decorationType = getDecorationTypeFromConfig();

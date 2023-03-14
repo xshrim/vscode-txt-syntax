@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.2.3
+
+- Support auto import on save
+
 ## v0.2.2
 
 - Fixed crash problem on vscode insider
