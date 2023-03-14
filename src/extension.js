@@ -137,17 +137,16 @@ async function activate(context) {
   // });
 
 
-  /////////////// auto quick fix
+  /////////////// auto import
   if (config.get("enableAutoImport", true)) {
     vscode.workspace.onWillSaveTextDocument((e) => {
-      console.log("======================= will save")
-      if vscode.workspace.getConfiguration("editor").get("formatOnSave") {
+      if (vscode.workspace.getConfiguration("editor").get("formatOnSave")) {
         // auto import
-        console.log("===============================auto import")
-        vscode.commands.executeCommand('editor.action.sourceAction', {
-			    "kind": "source.addMissingImports",
-			    "apply": "first"
-		    });
+        //vscode.commands.executeCommand('editor.action.sourceAction', {
+        //  "kind": "source.addMissingImports",
+        //  "apply": "first"
+        //});
+        vscode.commands.executeCommand("editor.action.organizeImports");
         // auto format
         // vscode.commands.executeCommand(
         //   "editor.action.format",
