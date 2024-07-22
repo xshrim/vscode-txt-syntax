@@ -2,7 +2,7 @@
   "name": "txt-syntax",
   "displayName": "Txt Syntax",
   "description": "highlight text files(.txt, .out .tmp, .log, .ini, .cnf ...) and provide general utility tools for text documents",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "publisher": "xshrim",
   "repository": "https://github.com/xshrim/vscode-txt-syntax",
   "icon": "logo.png",
@@ -221,6 +221,14 @@
             ".properties"
           ]
         },
+        "txtsyntax.enableSearchMenu": {
+          "type": "boolean",
+          "default": true
+        },
+        "txtsyntax.enableFileMenu": {
+          "type": "boolean",
+          "default": true
+        },
         "txtsyntax.enableCodeLens": {
           "type": "boolean",
           "default": true
@@ -228,6 +236,10 @@
         "txtsyntax.enableAutoImport": {
           "type": "boolean",
           "default": false
+        },
+        "txtsyntax.enableHighlightMenu": {
+          "type": "boolean",
+          "default": true
         },
         "txtsyntax.enableHighlightLine": {
           "type": "boolean",
@@ -330,32 +342,32 @@
         {
           "command": "txtsyntax.searchit",
           "group": "txsyntax",
-          "when": "editorTextFocus"
+          "when": "config.txtsyntax.enableSearchMenu && editorTextFocus"
         },
         {
           "command": "txtsyntax.openit",
           "group": "txsyntax",
-          "when": "editorTextFocus && resourceLangId == txt"
+          "when": "config.txtsyntax.enableFileMenu && editorTextFocus && resourceLangId == txt"
         },
         {
           "command": "txtsyntax.toggleHighlight",
           "group": "txsyntax",
-          "when": "editorTextFocus"
+          "when": "config.txtsyntax.enableHighlightMenu && editorTextFocus"
         },
         {
           "command": "txtsyntax.cleanHighlights",
           "group": "txsyntax",
-          "when": "editorTextFocus"
+          "when": "config.txtsyntax.enableHighlightMenu && editorTextFocus"
         },
         {
           "command": "txtsyntax.findPrevious",
           "group": "txsyntax",
-          "when": "editorTextFocus"
+          "when": "config.txtsyntax.enableHighlightMenu && editorTextFocus"
         },
         {
           "command": "txtsyntax.findNext",
           "group": "txsyntax",
-          "when": "editorTextFocus"
+          "when": "config.txtsyntax.enableHighlightMenu && editorTextFocus"
         }
       ],
       "view/item/context": [

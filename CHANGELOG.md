@@ -1,5 +1,9 @@
 # Change Log
 
+## v0.2.4
+
+- Support enable/disable menu context
+
 ## v0.2.3
 
 - Support auto import on save
