@@ -1,3 +1,5 @@
+
+
 # TXT Syntax
 
 ## Features
@@ -23,7 +25,7 @@
 
 #### default
 
-The following type types are supported by default:
+The following file types are supported by default:
 
 ```
 .txt
